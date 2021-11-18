@@ -9,7 +9,7 @@
 #include <unistd.h>
 #include <algorithm> 
 #include <fstream> 
-#define pi 3.14159265
+#define PI 3.14159265
 #define ss second
 #define ff first
 #define pb push_back
@@ -53,9 +53,11 @@ typedef pair<int,int> pii;
 //     cout << "Time taken by function: "
 //          << duration.count() << " microseconds" << endl; 
 #define mod 1000000007
-// #define mod 99820353
+// #define mod 1000
+// #define mod 998244353
 // #define unordered_map ump
  
+// int mod = 1000;
  
 struct ListNode {
     int val;
@@ -125,7 +127,9 @@ void show_vvi(vector<vector<int>> ans){
     }
     cout<<endl;
 }
- 
+
+
+
 int randd(){
     // struct timeval end_time;
     timeval start_time;
@@ -227,44 +231,43 @@ ll ncr(ll n, ll r)
     return C[r]; 
 } 
  
-int fact(int n){
-    return (n==0)?1:(ll)(n*fact(n-1))%mod;
-}
+// int fact(int n){
+//     return (n==0)?1:(ll)(n*fact(n-1))%mod;
+// }
  
  
 vll prime_factors(ll n){
     vll ans;
-    while (n % 2 == 0)  
-    {  
-        ans.push_back(2);
-        n = n/2;  
-    }  
-   
-    for (int i = 3; i <= sqrt(n); i = i + 2)  
-    {   
-        while (n % i == 0)  
+        while (n % 2 == 0)  
         {  
-            ans.push_back(i);  
-            n = n/i;  
+            ans.push_back(2);
+            n = n/2;  
         }  
-    }  
-    if (n > 2)  
-        ans.push_back(n);
+       
+        for (int i = 3; i <= sqrt(n); i = i + 2)  
+        {   
+            while (n % i == 0)  
+            {  
+                ans.push_back(i);  
+                n = n/i;  
+            }  
+        }  
+        if (n > 2)  
+            ans.push_back(n);
     return ans;
 }
- 
 ll pow_m(ll a,ll b){
     // cout<<a<<" "<<b<<endl;
-    if(b==1) return a%mod;
+    // if(b==1) return a%mod;
     if(b==0) return 1%mod;
     ll k = (ll)pow_m(a,b/2);
     if(b%2){
         return (((k*k)%mod)*a)%mod;
     }
-    else return (((k*k)%mod));
+    else return (k*k)%mod;
  
 }
-
+ 
 ll poww(ll a,ll b){
     // cout<<a<<" "<<b<<endl;
     if(b==1) return a;
@@ -277,7 +280,7 @@ ll poww(ll a,ll b){
  
 }
  
-int modInverse(int a, int m) 
+ll modInverse(ll a, ll m) 
 { 
     return pow_m(a,m-2); 
 } 
@@ -329,8 +332,7 @@ ll ncrr(ll a,ll b){
     }
     for(int i = 0;i<b;i++){
         ans*=a;
-        a--;
-        ans%=mod;
+                ans%=mod;
     }
  
     for(int i = 1;i<=b;i++){
@@ -341,7 +343,7 @@ ll ncrr(ll a,ll b){
 }
  
 void init_code(){
-    FAST
+    // FAST
     #ifndef ONLINE_JUDGE
     freopen("input.txt", "r", stdin);
     freopen("output.txt", "w", stdout);
@@ -370,7 +372,6 @@ public:
                 }
             }
         }
- 
         return lps;
     }
  
@@ -399,75 +400,93 @@ public:
     }
 };
  
-
-class segtree
-{
-public:
-    vi A;
-    segtree(int n){
-        A.resize(4*n+5);
-    };
-
-    void sett(int id,int s,int e,int idx,int val){
-        if(idx<s||idx>e) return;
-        A[id]+=val;
-        if(s==e) return;
-        int mid = (s+e)/2;
-        sett(2*id,s,mid,idx,val);
-        sett(2*id+1,mid+1,e,idx,val);
-    }
-
-    int gett(int id,int s,int e,int l,int r){
-        // if(s>e) return 0;
-        if(s>=l&&e<=r) return A[id];
-        if(min(e,r)<max(s,l)) return 0;
-        int mid = (s+e)/2;
-        int ans = 0;
-        ans+=gett(2*id,s,mid,l,r);
-        ans+=gett(2*id+1,mid+1,e,l,r);
-        return ans;
-    }
-    
-};
-
-
+ 
 class fast_segtree
 {
 public:
-    static const int N = 2e5+5;  // limit for array size
-    int n;  // array size
-    int t[2 * N];
-    fast_segtree(vi &A){
-        n = A.size();
-        for(int i = 0;i<A.size();i++) t[i+n] = A[i];
-    };
-
+    static const ll N = 2e5+15;  // limit for array size
+    ll n = N;  // array size
+    ll t[2 * N];
+    
+ 
     void build() {  // build the tree
-      for (int i = n - 1; i > 0; --i) t[i] = t[i<<1] + t[i<<1|1];
+      for (ll i = n - 1; i > 0; --i) t[i] = t[i<<1] + t[i<<1|1];
     }
-
-    void modify(int p, int value) {  // set value at position p
-      for (t[p += n] = value; p > 1; p >>= 1) t[p>>1] = t[p] + t[p^1];
+ 
+    void modify(ll p, ll value) {  // set value at position p
+      for (t[p += n] += value; p > 1; p >>= 1) t[p>>1] = t[p] + t[p^1];
     }
-
-    int query(int l, int r) {  // sum on interval [l, r)
-      int res = 0;
+ 
+    ll query(ll l, ll r) {  // sum on llerval [l, r)
+      ll res = 0;
       for (l += n, r += n; l < r; l >>= 1, r >>= 1) {
         if (l&1) res += t[l++];
         if (r&1) res += t[--r];
       }
       return res;
     }
+
+    fast_segtree(vector<ll> &A){
+        n = A.size();
+        for(ll i = 0;i<A.size();i++) t[i+n] = A[i];
+        build();
+    };
+
+    fast_segtree(ll n1){
+        n = n1;
+        for(ll i = 0;i<n;i++) t[i+n] = 0;
+        build();
+    };
     
 };
 
 
+class segtree
+{
+public:
+    vector<ll> A;
+    ll n;
+    segtree(ll n1){
+        n = n1;
+        A.clear();
+        A.resize(4*n+5);
+    };
+ 
+    void sett(ll id,ll s,ll e,ll idx,ll val){
+        if(idx<s||idx>e) return;
+        A[id]+=val;
+        if(s==e) return;
+        ll mid = (s+e)/2;
+        sett(2*id,s,mid,idx,val);
+        sett(2*id+1,mid+1,e,idx,val);
+    }
+ 
+    ll gett(ll id,ll s,ll e,ll l,ll r){
+        // if(s>e) return 0;
+        if(s>=l&&e<=r) return A[id];
+        if(min(e,r)<max(s,l)) return 0;
+        ll mid = (s+e)/2;
+        ll ans = 0;
+        ans+=gett(2*id,s,mid,l,r);
+        ans+=gett(2*id+1,mid+1,e,l,r);
+        return ans;
+    }
+
+    void sett(ll id,ll val){
+        sett(1,0,n-1,id,val);
+    }
+
+    ll gett(ll l,ll r){
+        return gett(1,0,n-1,l,r-1);
+    }
+    
+};
 
 
-
+ 
 vector<ll> djikstra(int sr, vector<vector<pii>> &gr){
     int n = gr.size();
-    vll ans(n,INT_MAX);
+    vll ans(n,1e15);
     priority_queue<pii> pq;
     pq.push({0,sr});
     while(pq.size()){
@@ -489,57 +508,157 @@ vector<ll> djikstra(int sr, vector<vector<pii>> &gr){
     return ans;
 }
 
-void help(){
-    ll n,k;
-    cin>>n>>k;
-    vll A(n);
-    for(int i = 0;i<n;i++){
-        cin>>A[i];
-    }
-    ll ans = INT_MIN;
-    int i = max(0LL,n-5000);
-    // cout<<i<<endl;
-    while(i<n){
-        for(int j = i+1;j<n;j++){
-            ans = max(ans,1LL*(i+1)*(j+1)-k*(A[i]|A[j]));
+class union_find
+{
+public:
+    const int max_sz = 2e5+5;
+    vector<int> rank;
+    vector<int> parent;
+    union_find(int n){
+        rank.resize(n);
+        parent = rank;
+        for(int i = 0;i<n;i++){
+            parent[i] = i;
         }
-        i++;
-    }
-    cout<<ans<<endl;
+    };
 
+    int find(int i){
+        if(parent[i]==i) return i;
+        return find(parent[i]);
+    }
+
+    int connect(int i,int j){
+        int a = find(i);
+        int b = find(j);
+        if(a==b) return -1;
+        if(rank[a]<rank[b]) swap(a,b);
+        parent[b] = a;
+        if(rank[a]==rank[b]) rank[a]++;
+        return 0;
+    }
+};
+
+class tries
+{
+public:
+    static const int max_sz = 5e6;
+    int nodes[max_sz][12];
+    int curr = 1;
+    tries(){
+        memset(nodes,0,sizeof(nodes));
+    }
+
+    void insert(string A){
+        int u = 0;
+        // cout<<"insert "<<A<<endl;
+        for(int i = 0;i<A.size();i++){
+            int child = A[i]-'0';
+            if(A[i]=='-') child = 10;
+            if(!nodes[u][child]) nodes[u][child] = curr++;
+            u = nodes[u][child];
+        }
+        nodes[u][11] = 1;
+    }
+
+    bool find(string A){
+        int u = 0;
+        for(int i = 0;i<A.size();i++){
+            int child = A[i]-'0';
+            if(A[i]=='-') child = 10;
+            if(!nodes[u][child]) return 0;
+            u = nodes[u][child];
+        }
+        return nodes[u][11];
+    }
+    
+};
+
+
+int g = 107;
+
+ll find_hash(string A){
+    ll ans = 0;
+    int n = A.size();
+    for(int i= 0;i<n;i++){
+        ans+=(pow_m(g,i)*(A[i]-'a'+1));
+        ans%=mod;
+    }
+    return ans;
 }
 
+
+class string_hash{
+public:
+    string A;
+    static const int max_n = (2e5)+5;
+    ll hash_sum[max_n];
+    string_hash(string B){
+        hash_sum[0] = 0;
+        A = B;
+        int n  =A.size();
+        for(int i = 0;i<n;i++){
+            hash_sum[i+1] = hash_sum[i] + pow_m(g,i)*(A[i]-'a'+1);
+            hash_sum[i+1]%=mod;
+        }
+    };
+
+
+    ll give_hash(int i,int j){
+        ll temp = hash_sum[j+1]-hash_sum[i];
+        if(temp<mod) temp+=mod;
+        return (temp*(modInverse(pow_m(g,i),mod)))%mod;
+    }
+
+};
+
+
+const int max_n = 1e3+5;
+int dp[max_n][max_n];
+int A[max_n];
+int N;
+int dfs(int i,int j){
+    // cout<<i<<" "<<j<<endl;
+    if(dp[i][j]!=-1) return dp[i][j];
+    if(i>j) return 0;
+    int turn = N-(j-i);
+    int temp1 = turn*A[i] + A[j];
+    int temp2 = turn*A[j] + A[j];
+    // cout<<temp1
+    return dp[i][j] = max(temp1+dfs(i+1,j),temp2+dfs(i,j-1));
+}
+
+int generateEnergy(int n, vi a){
+    // Implement this function
+    // return 0;
+    for(int i = 0;i<n;i++) A[i] = a[i];
+    N = n;
+    sort(A,A+n);
+    for(int i = 0;i<n;i++) cout<<A[i]<<" ";
+    cout<<endl;
+    memset(dp,-1,sizeof(dp));
+    return dfs(0,n-1);
+    
+}
 // write maths or wahtever logic is there
 // think of dfs/bfs/dp/deque/set/sort/union-find/binary_search/brute-force/greedy/
 // always use bfs in shortest path, check whether dfs can provide wrong answer in case of min. distance/ minimisation
 int main(){
     // auto start = high_resolution_clock::now();
     // Solution s;
-    // KMP k;
-    FAST
     // init_code();
-    // []
-    // cout<<s.()<<endl;
+    int  t = 1;
+    // cin>>t;
+    // t = randd()%100+1;
+    vi A = {1,2,3};
+    cout<<generateEnergy(3,A)<<endl;
 
-    int t = 1;
-    cin>>t;
-    while(t--){
-        help();
-    }
+    // for(int i = 0;i<100;i++){
+    //     int j = randd()%100;
+    //     int k = randd()%100;
+    //     if(j>k) swap(j,k);
 
-
-    // cout<<check(0,1,1,1)<<endl;
-
-    // cout<<help1(123)<<endl;
-    // cout<<"ok"<<endl;
-    // for(int i = 1;i<9;i++){
-    //     for(int j = 1;j<9;j++){
-    //         n = i;m = j;
-    //         // cout<<"yes"<<endl;
-    //         help();
-    //     }
-    //     cout<<endl;
     // }
+    // cout<<endl;
 
     // auto stop = high_resolution_clock::now(); 
     // auto duration = duration_cast<microseconds>(stop - start);
@@ -547,3 +666,5 @@ int main(){
     //      << duration.count() << " microseconds" << endl; 
     return 0;
 }
+
+
